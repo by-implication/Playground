@@ -50,7 +50,8 @@ void save()
 void set(string key, string value)
 {
 	data[key] = value;
-	keys.push_back(key);
+	if( count(keys.begin(), keys.end(), key) == 0 )
+		keys.push_back(key);
 	cout << "<" << key << "," << value <<">" " was added.\n";
 }
 
@@ -64,12 +65,35 @@ string get(string key)
 		return "Key not found.";
 }
 
+void deline(string key)
+{
+	string line;
+	
+    ifstream in("data");
+    
+    ofstream out("temp");
+    
+    while( getline(in, line) )
+    {
+        if(line.compare(0,key.length(), key) != 0)
+        {
+            out << line << endl;
+        }
+    }
+    in.close();
+    out.close();    
+    remove("data");
+    rename("temp","data");
+}
+
 void del(string key)
 {
 	if( data.count(key) > 0 )
 	{
-		data.erase(key);
 		cout << "<" << key << "," << data[key] <<">" " was deleted.\n";
+		data.erase(key);
+		keys.erase(remove(keys.begin(), keys.end(), key), keys.end());
+		deline(key);
 	}
 	else
 		cout << "Key does not exist.\n";
